@@ -1,1 +1,1 @@
-qemu-system-x86_64 --enable-kvm -kernel bin/osbuild.bin
+qemu-system-i386 -boot d --cdrom bin/osbuild.iso -drive file=test.img,format=raw
