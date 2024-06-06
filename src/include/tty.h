@@ -92,6 +92,10 @@ void tty_putchar(uint8_t character) {
             screen.video[pos] = character;
             screen.video[pos + 1] = cursor.color;
             cursor.x++;
+            if (cursor.x >= screen.width) {
+                cursor.x = 0;
+                cursor.y++;
+            }
             break;
     }
 
