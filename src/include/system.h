@@ -2,6 +2,7 @@
 #define __SYSTEM_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define UNUSED(x) (void)(x)
 
@@ -79,8 +80,28 @@ Copy to memory
 */
 void* memcpy(void* dst, void* src, uint32_t len) {
     uint8_t *d = (uint8_t*)dst;
-    const uint8_t *s = (const uint8_t*)src;
+    uint8_t *s = (uint8_t*)src;
     while (len-- > 0) *d++ = *s++;
+    return dst;
+}
+
+int memcmp(void* ptr1, void* ptr2, size_t num) {
+    uint8_t* p1 = (uint8_t*)ptr1;
+    uint8_t* p2 = (uint8_t*)ptr2;
+
+    for (size_t i = 0; i < num; i++) {
+        if (p1[i] != p2[i]) {
+            return p1[i] - p2[i];
+        }
+    }
+
+    return 0;
+}
+
+void* memmove(void* dst, void* src, size_t n) {
+    if(dst != src) {
+        memcpy(dst, src, n);
+    }
     return dst;
 }
 

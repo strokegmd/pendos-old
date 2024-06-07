@@ -1,3 +1,4 @@
+//kukuvagmd, [6/6/24 12:19 PM]
 #ifndef __IDT_H
 #define __IDT_H
 
@@ -6,35 +7,66 @@
 #include "../system.h"
 #include <stdint.h>
 
+/**
+ * Macro to set an IDT entry with the given index, handler address, selector, and flags.
+ */
 #define SET_IDT_ENTRY(idx) \
     set_idt_entry(idx, (uint32_t) &interrupt_handler_##idx,\
                   0x08, 0x8E);
 
+/**
+ * Macro to declare an interrupt handler function with the given index.
+ */
 #define DECLARE_INTERRUPT_HANDLER(i) void interrupt_handler_##i(void)
 
-void interrupt_enable_all() { __asm__ volatile("sti"); }
-void interrupt_disable_all() { __asm__ volatile("cli"); }
+/**
+ * Enables all interrupts.
+ */
+inline void interrupt_enable_all() { __asm__ volatile("sti"); }
 
-struct idt_entry {
-    uint16_t handler_lo;
-    uint16_t sel;
-    uint8_t always0;
-    uint8_t flags;
-    uint16_t handler_hi;
-} __attribute__((packed));
-typedef struct idt_entry idt_entry_t;
+/**
+ * Disables all interrupts.
+ */
+inline void interrupt_disable_all() { __asm__ volatile("cli"); }
 
-struct idt_ptr {
-    uint16_t limit;
-    uint32_t base;
-} __attribute__((packed));
-typedef struct idt_ptr idt_ptr_t;
+/**
+ * Structure to represent an IDT entry.
+ */
+typedef struct {
+    uint16_t handler_lo; /**< Lower 16 bits of the handler address */
+    uint16_t sel; /**< Selector for the handler */
+    uint8_t always0; /**< Always zero */
+    uint8_t flags; /**< Flags for the handler */
+    uint16_t handler_hi; /**< Upper 16 bits of the handler address */
+} __attribute__((packed)) idt_entry_t;
 
+/**
+ * Structure to represent an IDT pointer.
+ */
+typedef struct {
+    uint16_t limit; /**< Limit of the IDT */
+    uint32_t base; /**< Base address of the IDT */
+} __attribute__((packed)) idt_ptr_t;
+
+/**
+ * Array of IDT entries.
+ */
 idt_entry_t idt[IDT_NUM_ENTRIES];
+
+/**
+ * IDT pointer.
+ */
 idt_ptr_t idtp;
 
-extern void idt_load(struct idt_ptr* idt_ptr_addr);
+/**
+ * External function to load the IDT.
+ * @param idt_ptr_addr Address of the IDT pointer
+ */
+extern void idt_load(idt_ptr_t* idt_ptr_addr);
 
+/**
+ * Declare interrupt handlers for indices 0-19 and 32-47.
+ */
 DECLARE_INTERRUPT_HANDLER(0);
 DECLARE_INTERRUPT_HANDLER(1);
 DECLARE_INTERRUPT_HANDLER(2);
@@ -73,6 +105,13 @@ DECLARE_INTERRUPT_HANDLER(45);
 DECLARE_INTERRUPT_HANDLER(46);
 DECLARE_INTERRUPT_HANDLER(47);
 
+/**
+ * Sets an IDT entry with the given index, handler address, selector, and flags.
+ * @param num Index of the IDT entry
+ * @param handler Address of the handler function
+ * @param sel Selector for the handler
+ * @param flags Flags for the handler
+ */
 void set_idt_entry(uint8_t num, uint64_t handler, uint16_t sel, uint8_t flags) {
     idt[num].handler_lo = handler & 0xFFFF;
     idt[num].handler_hi = (handler >> 16) & 0xFFFF;
@@ -81,8 +120,11 @@ void set_idt_entry(uint8_t num, uint64_t handler, uint16_t sel, uint8_t flags) {
     idt[num].sel = sel;
 }
 
+/**
+ * Installs the IDT.
+ */
 void idt_install() {
-    idtp.limit = (sizeof(struct idt_entry) * IDT_NUM_ENTRIES) - 1;
+    idtp.limit = (sizeof(idt_entry_t) * IDT_NUM_ENTRIES) - 1;
     idtp.base = (uint32_t)&idt;
 
     for (uint32_t i = 0; i < IDT_NUM_ENTRIES; i++) {
@@ -113,6 +155,8 @@ void idt_install() {
     SET_IDT_ENTRY(17);
     SET_IDT_ENTRY(18);
     SET_IDT_ENTRY(19);
+
+    //  kukuvagmd, [6/6/24 12:19 PM]
 
     SET_IDT_ENTRY(32);
     SET_IDT_ENTRY(33);
