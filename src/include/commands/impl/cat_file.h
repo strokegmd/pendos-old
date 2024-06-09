@@ -9,10 +9,10 @@
 
 #include "../../fs/fat.h"
 #include "../../lib/string.h"
-#include "../../tty.h"
+#include "../../drivers/tty.h"
 #include "../command.h"
 
-void handle_cat (char *buffer) {
+void handle_cat(char *buffer) {
     fat_entry_t* entries = fat_list_files();
     for (uint8_t i = 0; i < 16; i++) {
         if (strlen(entries[i].name) < 1) continue;

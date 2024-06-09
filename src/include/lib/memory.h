@@ -46,9 +46,11 @@ void *malloc(int size) {
 }
 
 void free(void *ptr) {
-    for (int i = 0; blocks[i].present; i++)
-        if (blocks[i].used == false && blocks[i].addr == ptr)
+    for (int i = 0; blocks[i].present; i++) {
+        if (blocks[i].used == false && blocks[i].addr == ptr) {
             blocks[i].used = true;
+        }
+    }
 }
 
 void *realloc(void *memblock, int size) {

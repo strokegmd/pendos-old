@@ -6,7 +6,7 @@
 #define PENDOS_MAIN_1_SHUTDOWN_H
 
 #include "../../system.h"
-#include "../../tty.h"
+#include "../../drivers/tty.h"
 
 void handle_shutdown() {
     shutdown();

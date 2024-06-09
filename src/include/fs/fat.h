@@ -349,13 +349,25 @@ fat_entry_t* fat_list_files() {
 
 
 /*
-Finds file in root directory
+Finds file in root directory. Returns pointer to file
 */
-fat_entry_t* fat_find_file(uint8_t* name) {
+fat_entry_t* fat_find_file_ptr(uint8_t* name) {
     fat_entry_t* entries = fat_list_files();
     for (uint16_t i = 0; i < 16; i++) {
         if (strncmp(entries[i].name, name, 11)) {
             return &(entries[i]);
+        }
+    }
+}
+
+/*
+Finds file in root directory
+*/
+fat_entry_t fat_find_file(uint8_t* name) {
+    fat_entry_t* entries = fat_list_files();
+    for (uint16_t i = 0; i < 16; i++) {
+        if (strncmp(entries[i].name, name, 11)) {
+            return entries[i];
         }
     }
 }

@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include "memory.h"
 #include "../system.h"
-#include "../tty.h"
+#include "../drivers/tty.h"
 
 // не используй uint8_t вместо char, это разные вещи
 // мамут рахал

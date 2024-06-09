@@ -4,7 +4,7 @@
 ; 0x04 = Graphics mode
 */
 
-.set FLAGS,    0x00
+.set FLAGS,    0x04
 .set MAGIC,    0x1BADB002
 .set CHECKSUM, -(MAGIC + FLAGS)
 

@@ -5,7 +5,7 @@
 #ifndef PENDOS_MAIN_1_GET_TIME_H
 #define PENDOS_MAIN_1_GET_TIME_H
 
-#include "../../tty.h"
+#include "../../drivers/tty.h"
 #include "../../rtc.h"
 
 void handle_get_time() {

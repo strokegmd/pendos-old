@@ -5,7 +5,7 @@
 #ifndef PENDOS_MAIN_1_CLEAR_H
 #define PENDOS_MAIN_1_CLEAR_H
 
-#include "../../tty.h"
+#include "../../drivers/tty.h"
 
 void handle_clear() {
     tty_clear();

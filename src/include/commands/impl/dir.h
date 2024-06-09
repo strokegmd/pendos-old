@@ -5,7 +5,7 @@
 #ifndef PENDOS_MAIN_1_DIR_H
 #define PENDOS_MAIN_1_DIR_H
 
-#include "../../tty.h"
+#include "../../drivers/tty.h"
 
 void handle_dir(char *buffer) {
     fat_entry_t* entries = fat_list_files();

@@ -7,7 +7,7 @@
 
 void handle_setname(char* buffer) {
     uint8_t* name = strrem(buffer, 8);
-    fat_write_file(fat_find_file("NAME       "), name, strlen(name));
+    fat_write_file(fat_find_file_ptr("NAME       "), name, strlen(name));
     tty_putchar('\n');
 }
 
