@@ -44,10 +44,6 @@ void get_args(char *input, uint8_t *args_ptr) {
     uint8_t char_pos = 0;
 
     for (uint16_t i = 0; input[i] != '\0'; ++i) {
-        if (input[i] == ' ') {
-            continue;
-        }
-
         while (input[i] != ' ' && input[i] != '\0') {
             args_buffer[args][char_pos++] = input[i++];
         }

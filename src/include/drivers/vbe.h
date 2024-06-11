@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 #include "../grub/multiboot.h"
-#include "../gfx/font.h"
 #include "../lib/string.h"
+#include "../fs/fat.h"
 
 multiboot_info_t* vbe_mbinfo;
 void* framebuffer;
@@ -12,6 +12,21 @@ void* framebuffer;
 uint32_t backbuffer[800*600];
 uint32_t pitch;
 uint32_t size;
+uint8_t* font;
+
+typedef struct {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+} pixel_t;
+
+/*
+Gets RGB pixel in HEX
+*/
+uint32_t pixel(uint8_t r, uint8_t g, uint8_t b) {
+    pixel_t px = { r, g, b };
+    return (px.r << 16) | (px.g << 8) | px.b;
+}
 
 /*
 Inits VBE mode
@@ -21,13 +36,14 @@ void vbe_init(multiboot_info_t* mbinfo) {
     framebuffer = (void *) (unsigned long) vbe_mbinfo->framebuffer_addr;
     pitch = vbe_mbinfo->framebuffer_pitch / 4;
     size = vbe_mbinfo->framebuffer_pitch * vbe_mbinfo->framebuffer_height;
+    font = fat_read_file(fat_find_file("DEFAULT FNT"));
 }
 
 /*
 Swaps buffers in VBE mode
 */
 void vbe_swap_buffers() {
-    memcpy(framebuffer, backbuffer, 800*600*4);
+    memmove(framebuffer, backbuffer, 800*600*4);
 }
 
 /*
@@ -41,7 +57,9 @@ void vbe_putpixel(uint16_t x, uint16_t y, uint32_t color) {
 Fills screen with a color in VBE mode
 */
 void vbe_fill(uint32_t color) {
-    memset((uint8_t*) backbuffer, color, size);
+    for (int i = 0; i < size / 4; i++) {
+        ((uint32_t*)backbuffer)[i] = color;
+    }
 }
 
 /*
@@ -60,13 +78,13 @@ void vbe_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t 
 Plots a character on screen in VBE mode
 */
 void vbe_putchar(uint8_t character, uint32_t x, uint32_t y, uint32_t color, uint32_t scale) {
-    if(character == '\n') return;
+    if (character == '\n') return;
 
     uint16_t mask[8] = { 1, 2, 4 ,8, 16, 32, 64, 128 };
-    uint8_t *glyph = vbe_font + (int) character * 16;
+    uint8_t *glyph = font + (uint16_t) character * 16;
  
-    for (uint32_t cy = 0; cy < 16; cy++){
-        for (uint32_t cx = 0; cx < 8; cx++){
+    for (uint32_t cy = 0; cy < 16; cy++) {
+        for (uint32_t cx = 0; cx < 8; cx++) {
             if (glyph[cy] & mask[7-cx]) {
                 for (uint32_t s = 0; s < scale; s++) {
                     for (uint32_t s1 = 0; s1 < scale; s1++) {

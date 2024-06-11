@@ -11,7 +11,7 @@ sudo mount test.img osfiles
 cp -R content/* osfiles/
 
 ./i686-elf-as -W src/boot.s -o bin/boot.bin
-gcc -O3 -m32 -c src/kernel.c -o bin/kernel.bin -ffreestanding
+gcc -O2 -m32 -c src/kernel.c -o bin/kernel.bin -ffreestanding
 ld -m elf_i386 -T link.ld -o grub/boot/osbuild.bin bin/boot.bin bin/kernel.bin
 grub-mkrescue -o bin/osbuild.iso grub/
 sudo umount osfiles

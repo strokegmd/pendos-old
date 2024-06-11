@@ -79,6 +79,11 @@ void handle_sysinfo() {
                 tty_write_string("mb");
                 tty_set_color(tty_get_color(TTY_COLOR_LIGHT_BLUE, TTY_COLOR_BLACK));
                 break;
+            case 6:
+                print_param("Compiled At", __DATE__);
+                tty_set_color(tty_get_color(TTY_COLOR_WHITE, TTY_COLOR_BLACK));
+                tty_putchar(' ');
+                tty_write_string(__TIME__);
             default:
                 break;
         }
