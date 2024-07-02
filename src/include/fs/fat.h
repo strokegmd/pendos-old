@@ -65,7 +65,7 @@ typedef struct {
  * @param sector_count The number of sectors to read.
  */
 void read_sectors(uint32_t lba, uint8_t* buffer, uint32_t sector_count) {
-    ata_pio_read48(lba, sector_count, buffer);
+    ata_pio_read28(lba, sector_count, buffer);
 }
 
 void write_sectors(uint32_t lba, uint8_t* buffer, uint32_t sector_count) {
@@ -153,8 +153,32 @@ uint8_t* fat_read_file(fat_entry_t file) {
     }
 
     file_buffer[file_size] = '\0';
-    free(file_buffer);
     return file_buffer;
+}
+
+void fat_read_file_nm(fat_entry_t file, uint8_t* file_buffer) {
+    fat_bs_t bs;
+    read_boot_sector(&bs);
+
+    uint32_t current_cluster = (file.cluster_high << 16) | file.cluster_low;
+    uint32_t file_size = file.file_size;
+    uint8_t sector_buffer[512];
+
+    uint32_t bytes_read = 0;
+    while (bytes_read < file_size) {
+        uint32_t sector = get_sector_for_cluster(&bs, current_cluster);
+        read_sectors(sector, sector_buffer, 1);
+
+        uint32_t bytes_to_copy = file_size - bytes_read;
+        if (bytes_to_copy > 512) bytes_to_copy = 512;
+        memcpy(file_buffer + bytes_read, sector_buffer, bytes_to_copy);
+        bytes_read += bytes_to_copy;
+
+        current_cluster = get_next_cluster_from_fat(current_cluster, &bs);
+        if (current_cluster >= 0x0FFFFFF8) break;
+    }
+
+    file_buffer[file_size] = '\0';
 }
 
 /*

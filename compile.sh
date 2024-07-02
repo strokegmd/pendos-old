@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo umount osfiles
+sudo umount -l osfiles
 dd if=/dev/zero of=test.img bs=1M count=100
 sudo mkfs.fat -F32 test.img -s 1
 sudo rm -rf content/name
@@ -14,4 +14,4 @@ cp -R content/* osfiles/
 gcc -O2 -m32 -c src/kernel.c -o bin/kernel.bin -ffreestanding
 ld -m elf_i386 -T link.ld -o grub/boot/osbuild.bin bin/boot.bin bin/kernel.bin
 grub-mkrescue -o bin/osbuild.iso grub/
-sudo umount osfiles
+sudo umount -l osfiles

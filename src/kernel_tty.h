@@ -27,6 +27,7 @@
 #include "include/commands/impl/setpcname.h"
 #include "include/commands/impl/echo.h"
 #include "include/commands/impl/sysinfo.h"
+#include "include/commands/impl/exec.h"
 
 #include "include/drivers/ps2/keyboard.h"
 #include "include/grub/multiboot.h"
@@ -89,18 +90,7 @@ void inputLoop() {
     inputLoop();
 }
 
-void init() {
-    gdt_install();
-    idt_install();
-    interrupt_disable_all();
-    pit_install();
-    keyboard_install();
-    interrupt_enable_all();
-}
-
 void kmain_tty(multiboot_info_t* mbinfo) {
-    init();
-    
     tty_clear();
 
     tty_write_string("Welcome to ");
@@ -123,6 +113,7 @@ void kmain_tty(multiboot_info_t* mbinfo) {
     add_command((command_t) { "setpcname", handle_setpcname });
     add_command((command_t) { "echo", handle_echo });
     add_command((command_t) { "sysinfo", handle_sysinfo });
+    add_command((command_t) { "exec", handle_exec });
 
     ram_count = ram_get_bytes(mbinfo);
 

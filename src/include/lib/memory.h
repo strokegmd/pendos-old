@@ -54,12 +54,12 @@ void free(void *ptr) {
 }
 
 void *realloc(void *memblock, int size) {
-    if(memblock < (void*)0x500) {
+    if (memblock < (void*)0x500) {
         return malloc(size);
     }
     else {
         void *newmem = malloc(size);
-        if(newmem) {
+        if (newmem) {
             memmove(newmem, memblock, size);
             free(memblock);
         }

@@ -2,6 +2,7 @@
 #define __WINDOWS_H
 
 #include "../drivers/vbe.h"
+#include "../drivers/ps2/mouse.h"
 #include <stdint.h>
 
 typedef struct {
@@ -26,10 +27,23 @@ window_t create_window(uint8_t* title, uint16_t x, uint16_t y, uint16_t width, u
 /*
 Displays titlebar for window object
 */
-void display_titlebar(window_t window) {
-    if (!window.show_titlebar) return;
-    vbe_rect(window.x, window.y - 20, window.width, 20, 0x222222);
-    vbe_write_string(window.title, window.x + 10, window.y - 18, 0xffffff, 1);
+void display_titlebar(window_t* window) {
+    if (!window->show_titlebar) return;
+    vbe_rect(window->x, window->y - 20, window->width, 20, 0x222222);
+    vbe_write_string(window->title, window->x + 10, window->y - 18, 0xffffff, 1);
+
+    bool isHovered = mouse_x > window->x && mouse_x < window->x + window->width
+                  && mouse_y > window->y - 50 && mouse_y < window->y + 10;
+
+    vbe_write_string(itoa(isHovered), 0, 0, 0xffffff, 1);
+
+    // TODO: fix this fucking fuck
+    if (isHovered && mouse_is_moving() && mouse_button == 1) {
+        window->x += mouse_xd;
+        window->y -= mouse_yd;
+        mouse_xd = 0;
+        mouse_yd = 0;
+    }
 }
 
 /*
@@ -101,11 +115,11 @@ void window_write_string(window_t* window, uint8_t* string, uint16_t color, uint
 /*
 Displays window object
 */
-void display_window(window_t window) {
-    if (!window.visible) return;
-    vbe_rect(window.x, window.y, window.width, window.height, 0xffffff);
+void display_window(window_t* window) {
+    if (!window->visible) return;
+    vbe_rect(window->x, window->y, window->width, window->height, 0xffffff);
 
-    if (!window.show_titlebar) return;
+    if (!window->show_titlebar) return;
     display_titlebar(window);
 }
 
