@@ -8,8 +8,7 @@
 #include <stdbool.h>
 
 bool shift = false;
-
-uint8_t kb_key = 0;
+bool caps  = false;
 
 const uint8_t keymap[128] = {
     0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t', 
@@ -31,6 +30,16 @@ const uint8_t keymap_shift[128] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+const uint8_t keymap_caps[128] = {
+    0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t', 
+    'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\n', 0, 
+    'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', '\'', '`', 0, 
+    '\\', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 0, '*', 
+    0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '-', 
+    0, 0, 0, '+', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
 volatile uint8_t key_buffer[128];
 volatile uint8_t buffer_head = 0;
 volatile uint8_t buffer_tail = 0;
@@ -42,11 +51,12 @@ void keyboard_handler() {
     uint8_t scancode = inb(KEYBOARD_DATA_PORT);
 
     if (scancode & 0x80) {
-        kb_key = 0;
         shift = scancode == 0xAA ? false : shift;
     } else {
         shift = scancode == 0x2A ? true : shift;
+        caps = scancode == 0x3A ? !caps : caps;
         uint8_t c = shift ? keymap_shift[scancode] : keymap[scancode];
+        c = caps ? keymap_caps[scancode] : c;
         if (c) {
             key_buffer[buffer_head] = c;
             buffer_head = (buffer_head + 1) % 128;

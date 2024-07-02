@@ -1,0 +1,12 @@
+there is listed some issues with pendOS developing:
+
+1) linking errors (errors starts with fno stack):
+there is some interesting fix: if you use any not debian-based linux distro, you can try use debootstrap.
+on arch, you can install it using pacman -S debootstrap.
+then, you can execute this command - sudo debootstrap bookworm FolderName
+it will create debian emulation, and you can use it for compiling.
+
+use compile-dbstrp.sh script for compiling
+also copy pendos-compile.sh script to / of your debootstrap
+
+if you use debian-based distro, there should be no errors with linking & compiling

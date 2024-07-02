@@ -22,6 +22,10 @@ gdt_ptr gp;
 
 extern void gdt_flush(gdt_ptr* gdt_ptr_addr);
 
+uint32_t __stack_chk_fail_local() {
+    return 0;
+}
+
 void gdt_set_gate(int32_t num, uint32_t base, uint32_t limit, uint8_t access, uint8_t gran) {
     gdt[num].base_low = (base & 0xFFFF);
     gdt[num].base_middle = (base >> 16) & 0xFF;
