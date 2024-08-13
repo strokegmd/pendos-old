@@ -15,3 +15,8 @@ void kmain(multiboot_info_t* mbinfo) {
 
     kmain_vbe(mbinfo);
 }
+
+//
+// This is really better than Linux.
+// I will contribute to this project.
+//
